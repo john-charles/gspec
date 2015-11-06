@@ -150,7 +150,7 @@ class SpecRunner {
 
             for(Assertion assertion: caseInfo.assertions){
                 if(!assertion.isOk()){
-                    print "Error: expected " + assertion.arg + " to be " + assertion.match + "\n";
+                    print "Error: expected " + assertion.match + " to be " + assertion.arg + "\n";
                 }
             }
         }
