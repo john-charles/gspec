@@ -57,31 +57,24 @@ interface SpecInfo {
 
     List<CaseInfo> getCases();
     List<SpecInfo> getChildSpecs();
-
-    def addCase(CaseInfo info);
-    def addChildSpec(SpecInfo info);
 }
 
 class RealSpecInfo implements SpecInfo {
 
     String name;
     Closure body;
+    List<Closure> afters;
+    List<Closure> befores;
     List<CaseInfo> cases;
     List<SpecInfo> childSpecs;
 
     RealSpecInfo(String name, Closure body){
         this.name = name;
         this.body = body;
+        this.befores = new LinkedList<>();
+        this.afters = new LinkedList<>();
         this.cases = new LinkedList<>();
         this.childSpecs = new LinkedList<>();
-    }
-
-    def addCase(CaseInfo caseInfo){
-        this.cases.add(caseInfo);
-    }
-
-    def addChildSpec(SpecInfo child){
-        this.childSpecs.add(child);
     }
 }
 
@@ -99,22 +92,14 @@ class RootSpecInfo implements SpecInfo {
     List<SpecInfo> getChildSpecs() {
         return specs;
     }
-
-    @Override
-    def addCase(CaseInfo info) {
-        cases.add(info);
-    }
-
-    @Override
-    def addChildSpec(SpecInfo info) {
-        specs.add(info);
-    }
 }
 
 
 class SpecRunner {
 
     RootSpecInfo root;
+    List<Closure> befores;
+    List<Closure> afters;
     List<SpecInfo> specList;
     List<CaseInfo> caseList;
     List<Assertion> assertions;
@@ -122,6 +107,14 @@ class SpecRunner {
     SpecRunner(){
         root = new RootSpecInfo();
         specList = root.childSpecs;
+    }
+
+    def addBefore(Closure before){
+        befores.add(before);
+    }
+
+    def addAfter(Closure after){
+        afters.add(after);
     }
 
     def addSpec(String description, Closure closure){
@@ -148,9 +141,17 @@ class SpecRunner {
 
     def runSpec(RealSpecInfo specInfo){
 
+        afters = specInfo.afters;
+        befores = specInfo.befores;
+
         specList = specInfo.childSpecs
         caseList = specInfo.cases;
+
         specInfo.body.call();
+
+        for(Closure before: specInfo.befores){
+            before();
+        }
 
         for(CaseInfo caseInfo: caseList){
             runCase(caseInfo);
@@ -160,6 +161,9 @@ class SpecRunner {
             runSpec((RealSpecInfo)child);
         }
 
+        for(Closure after: specInfo.afters){
+            after();
+        }
 
     }
 
@@ -205,6 +209,14 @@ class SpecRunner {
         runner = new SpecRunner();
     }
 
+    static def beforeEach(Closure before){
+        runner.addBefore before
+    }
+
+    static def afterEach(Closure after){
+        runner.addAfter after
+    }
+
     static def Describe(String description, Closure body){
         runner.addSpec(description, body);
     }
@@ -216,6 +228,7 @@ class SpecRunner {
     static def expect(Object thing){
         return runner.addAssert(thing);
     }
+
 
     static def runSpecs(){
         runner.runReal()
