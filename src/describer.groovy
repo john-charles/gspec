@@ -1,5 +1,9 @@
 class Assertion {
 
+    def toBe(Object stuff){
+
+    }
+
 }
 
 class CaseInfo {
@@ -77,48 +81,99 @@ class RootSpecInfo implements SpecInfo {
 
 class SpecRunner {
 
-    SpecInfo currentSpec;
-    CaseInfo currentCase;
     RootSpecInfo root;
+    List<SpecInfo> specList;
+    List<CaseInfo> caseList;
+    List<Assertion> assertions;
 
     SpecRunner(){
         root = new RootSpecInfo();
-        currentSpec = root;
+        specList = root.childSpecs;
     }
 
-    def describe(String description, Closure closure){
-        currentSpec.addChildSpec(new RealSpecInfo(description, closure));
+    def addSpec(String description, Closure closure){
+        specList.add(new RealSpecInfo(description, closure));
     }
 
-    def it(String description, Closure body){
-        currentSpec.addCase(new CaseInfo(description, body));
+    def addCase(String description, Closure body){
+        caseList.add(new CaseInfo(description, body));
     }
 
-    def run(){
+    def addAssert(Object stuff){
 
-         SpecInfo current = this.currentSpec;
-         for(SpecInfo info: current.childSpecs){
-             this.currentSpec = info;
-             info.body()
+        Assertion assertion = new Assertion();
+        assertions.add(assertion);
+        return assertion;
+    }
 
-             for(CaseInfo caseInfo: info.cases){
-                 currentCase = caseInfo;
-                 caseInfo.body();
-             }
+    def runCase(CaseInfo caseInfo){
 
-             this.currentSpec = current;
+        assertions = caseInfo.assertions;
+        caseInfo.body();
+
+    }
+
+    def runSpec(RealSpecInfo specInfo){
+
+        specList = specInfo.childSpecs
+        caseList = specInfo.cases;
+        specInfo.body.call();
+
+        for(SpecInfo child: specInfo.childSpecs){
+            runSpec((RealSpecInfo)child);
+        }
+    }
+
+    def runReal(){
+
+         for(SpecInfo specInfo: specList){
+             runSpec((RealSpecInfo)specInfo);
          }
+    }
 
+    def realPrintResults(String description, RealSpecInfo specInfo){
+
+        description = description + " " + specInfo.name;
+
+        print description + "\n"
+
+        for(CaseInfo caseInfo: specInfo.cases){
+            print "it should " + caseInfo.name + "\n";
+        }
+
+        for(SpecInfo child: specInfo.childSpecs){
+            realPrintResults(description, (RealSpecInfo)child)
+        }
+    }
+
+    def printResults(){
+
+        for(SpecInfo specInfo: root.childSpecs){
+            realPrintResults("", (RealSpecInfo)specInfo);
+        }
 
     }
+
+    static SpecRunner runner;
+
+    static {
+        runner = new SpecRunner();
+    }
+
+    static def describe(String description, Closure body){
+        runner.addSpec(description, body);
+    }
+
+    static def itShould(String desc, Closure body){
+        runner.addCase(desc, body);
+    }
+
+    static def expect(Object thing){
+        return runner.addAssert(thing);
+    }
+
+    static def runSpecs(){
+        runner.runReal()
+        runner.printResults();
+    }
 }
-
-def main(String[] args){
-    print "Stuff"
-}
-
-
-
-
-
-

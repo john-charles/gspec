@@ -1,2 +1,22 @@
+import static SpecRunner.*;
 
-System.out.println("Hello World");
+describe("Stuff", {
+
+    itShould("DO Thing", {
+
+
+
+    });
+
+    describe("inner stuff", {
+
+        itShould("do other thing", {
+
+
+
+        });
+    });
+
+});
+
+runSpecs();
