@@ -139,13 +139,15 @@ class SpecRunner {
 
     }
 
-    def runSpec(RealSpecInfo specInfo){
+    def runSpec(RealSpecInfo specInfo, indent){
 
         afters = specInfo.afters;
         befores = specInfo.befores;
 
         specList = specInfo.childSpecs
         caseList = specInfo.cases;
+
+        print indent + specInfo.name + "\n";
 
         specInfo.body.call();
 
@@ -158,7 +160,7 @@ class SpecRunner {
         }
 
         for(SpecInfo child: specInfo.childSpecs){
-            runSpec((RealSpecInfo)child);
+            runSpec((RealSpecInfo)child, indent + 1);
         }
 
         for(Closure after: specInfo.afters){
@@ -170,7 +172,7 @@ class SpecRunner {
     def runReal(){
 
          for(SpecInfo specInfo: specList){
-             runSpec((RealSpecInfo)specInfo);
+             runSpec((RealSpecInfo)specInfo, 0);
          }
     }
 

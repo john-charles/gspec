@@ -1,37 +1,91 @@
 import static SpecRunner.*;
 
-Describe("Stuff", {
+class Stack {
+
+    def count = 0;
+    def array = new LinkedList<>();
+
+    Stack(){
+        for(int i = 0; i < 500; i++) {
+            array.add(null)
+        }
+    }
+
+    def size() {
+        return count;
+    }
+
+    def push(arg) {
+        array.add(++count, arg);
+    }
+
+    def pop(){
+        array.get(count--);
+
+    }
+
+}
+
+Describe("A Stack", {
+
+    def stack;
 
     beforeEach({
+        stack = new Stack();
+    });
 
-        print "outer before\n"
+    It("should grow when something is added", {
+
+        expect(stack.size()).toBe(0);
+        stack.push("Thing")
+        expect(stack.size()).toBe(1);
 
     });
 
-    It("DO Thing", {
+    Describe("getting items", {
 
-        expect(true).toBe(true);
+        beforeEach({
 
-    });
+            stack.push("Thing");
 
-    afterEach({
-        print "outer after\n"
-    });
-
-    Describe("inner stuff", {
-
-        beforeEach {
-            print "inner before\n"
-        }
-
-        It("do other thing", {
-            expect(true).toBe(false);
-            expect(33).toBeGreaterThan(40)
         });
 
-        afterEach {
-            print "inner after\n"
-        }
+        It("should return the thing pushed on when pop is called", {
+            expect(stack.pop()).toBe("Thing");
+        });
+
+        Describe("when lots of stuff is on the stack", {
+
+            beforeEach({
+                stack.push("1");
+                stack.push("2");
+                stack.push("3");
+                stack.push("4");
+                stack.push("5");
+                stack.push("6");
+                stack.push("7");
+                stack.push("8");
+
+            })
+
+            It("should return the stuff in reverse order", {
+
+                expect(stack.pop()).toBe("8")
+                expect(stack.pop()).toBe("7")
+                expect(stack.pop()).toBe("6")
+                expect(stack.pop()).toBe("5")
+                expect(stack.pop()).toBe("4")
+                expect(stack.pop()).toBe("3")
+                expect(stack.pop()).toBe("2")
+                expect(stack.pop()).toBe("1")
+
+            })
+
+        })
+
+
+
+
     });
 
 });
