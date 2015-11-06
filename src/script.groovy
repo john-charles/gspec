@@ -12,6 +12,7 @@ Describe("Stuff", {
 
         It("do other thing", {
             expect(true).toBe(false);
+            expect(33).toBeGreaterThan(40)
         });
     });
 
