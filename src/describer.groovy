@@ -1,9 +1,20 @@
 class Assertion {
 
-    def toBe(Object stuff){
+    Object arg;
+    Object match;
 
+    Assertion(Object arg){
+        this.arg = arg;
+        this.match = null;
     }
 
+    def toBe(Object stuff){
+        this.match = stuff
+    }
+
+    def check() {
+        return this.arg.equals(match);
+    }
 }
 
 class CaseInfo {
@@ -99,9 +110,9 @@ class SpecRunner {
         caseList.add(new CaseInfo(description, body));
     }
 
-    def addAssert(Object stuff){
+    def addAssert(Object arg){
 
-        Assertion assertion = new Assertion();
+        Assertion assertion = new Assertion(arg);
         assertions.add(assertion);
         return assertion;
     }
@@ -119,9 +130,15 @@ class SpecRunner {
         caseList = specInfo.cases;
         specInfo.body.call();
 
+        for(CaseInfo caseInfo: caseList){
+            runCase(caseInfo);
+        }
+
         for(SpecInfo child: specInfo.childSpecs){
             runSpec((RealSpecInfo)child);
         }
+
+
     }
 
     def runReal(){
@@ -139,6 +156,12 @@ class SpecRunner {
 
         for(CaseInfo caseInfo: specInfo.cases){
             print "it should " + caseInfo.name + "\n";
+
+            for(Assertion assertion: caseInfo.assertions){
+                if(!assertion.check()){
+                    print "Error: expected " + assertion.arg + " to be " + assertion.match + "\n";
+                }
+            }
         }
 
         for(SpecInfo child: specInfo.childSpecs){
