@@ -1,45 +1,6 @@
 package com.example.old
 
-class Assertion {
-
-    Object arg;
-    Object match;
-    boolean matched;
-
-    Assertion(Object arg){
-        this.arg = arg;
-        this.match = null;
-    }
-
-    def toBe(Object match){
-        this.match = match;
-        this.matched = this.arg == match;
-    }
-
-    def toEqual(Object match){
-        this.match = match;
-        this.matched = this.arg.equals(match);
-    }
-
-    def toBeLessThan(Object match){
-        this.match = match;
-        this.matched = this.arg < match;
-    }
-
-    def toBeGreaterThan(Object match){
-        this.match = match;
-        this.matched = this.arg > match
-    }
-
-    def toBeNull(){
-        this.match = null;
-        this.matched = this.arg == null
-    }
-
-    def check() {
-        return matched
-    }
-}
+import com.example.gspec.Assertion
 
 class CaseInfo {
 
@@ -188,7 +149,7 @@ class SpecRunner {
             print "it should " + caseInfo.name + "\n";
 
             for(Assertion assertion: caseInfo.assertions){
-                if(!assertion.check()){
+                if(!assertion.isOk()){
                     print "Error: expected " + assertion.arg + " to be " + assertion.match + "\n";
                 }
             }

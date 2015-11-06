@@ -2,7 +2,6 @@ package com.example.gspec
 
 import static com.example.old.SpecRunner.*;
 
-
 Describe("An assertion", {
 
     Assertion assertion;
