@@ -102,7 +102,7 @@ class SpecRunner {
              info.body()
 
              for(CaseInfo caseInfo: info.cases){
-                 currentCase =
+                 currentCase = caseInfo;
                  caseInfo.body();
              }
 
@@ -111,10 +111,10 @@ class SpecRunner {
 
 
     }
+}
 
-
-
-
+def main(String[] args){
+    print "Stuff"
 }
 
 
