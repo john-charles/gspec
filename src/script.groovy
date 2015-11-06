@@ -1,16 +1,16 @@
 import static SpecRunner.*;
 
-describe("Stuff", {
+Describe("Stuff", {
 
-    itShould("DO Thing", {
+    It("DO Thing", {
 
         expect(true).toBe(true);
 
     });
 
-    describe("inner stuff", {
+    Describe("inner stuff", {
 
-        itShould("do other thing", {
+        It("do other thing", {
             expect(true).toBe(false);
         });
     });

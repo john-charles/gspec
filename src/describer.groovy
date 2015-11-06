@@ -183,11 +183,11 @@ class SpecRunner {
         runner = new SpecRunner();
     }
 
-    static def describe(String description, Closure body){
+    static def Describe(String description, Closure body){
         runner.addSpec(description, body);
     }
 
-    static def itShould(String desc, Closure body){
+    static def It(String desc, Closure body){
         runner.addCase(desc, body);
     }
 
