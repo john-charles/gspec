@@ -19,11 +19,19 @@ class SpecRunner {
     }
 
     def addCaseBlock(String name, Closure body){
-        cases.add(new CaseInfo(name, body))
+        if(currentSpec) {
+            currentSpec.cases.add(new CaseInfo(name, body))
+        } else {
+            cases.add(new CaseInfo(name, body));
+        }
     }
 
     def addSpecBlock(String name, Closure body){
-        specs.add(new SpecInfo(name, body))
+        if(currentSpec){
+            currentSpec.specs.add(new SpecInfo(name, body))
+        } else {
+            specs.add(new SpecInfo(name, body))
+        }
     }
 
     def runCase(CaseInfo caseInfo){
@@ -42,9 +50,15 @@ class SpecRunner {
         currentSpec = specInfo;
         specInfo.body();
 
-        for(CaseInfo caseInfo: cases){
+        for(CaseInfo caseInfo: specInfo.cases){
             runCase(caseInfo);
         }
+
+        for(SpecInfo childInfo: specInfo.specs){
+            runSpec(childInfo);
+        }
+
+        currentSpec = null;
 
     }
 

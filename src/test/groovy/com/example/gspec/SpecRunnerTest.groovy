@@ -152,18 +152,53 @@ Describe("A Spec Runner", {
 
             });
 
-            runner.runSpec(runner.specs.get(0));
+            def firstSpec = runner.specs.get(0);
+            runner.runSpec(firstSpec);
 
             expect(oneRan).toBe(true);
             expect(twoRan).toBe(true);
-            expect(runner.cases.size()).toBe(2);
+            expect(firstSpec.cases.size()).toBe(2);
 
         });
 
+        It("Should collect specs within the spec", {
 
+            runner = new SpecRunner();
+
+            def prints = [];
+
+            runner.printer = new IPrinter() {
+                @Override
+                void printLine(String line) {
+                    prints.add(line);
+                }
+            }
+
+            def oneRan = false;
+            def twoRan = false;
+
+            runner.addSpecBlock("describe a thing", {
+
+                runner.addSpecBlock("spec 1", {
+                    oneRan = true;
+                });
+
+                runner.addSpecBlock("spec 2", {
+                    twoRan = true;
+                })
+
+            });
+
+            def firstSpec = runner.specs.get(0)
+            runner.runSpec(firstSpec);
+
+            expect(oneRan).toBe(true);
+            expect(twoRan).toBe(true);
+            expect(runner.currentSpec).toBe(null);
+            expect(firstSpec.specs.size()).toBe(2);
+
+        });
     });
-
-
 });
 
 runSpecs();
