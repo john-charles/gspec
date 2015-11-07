@@ -19,16 +19,6 @@ Describe("A Spec Runner", {
         }
     });
 
-    It("should collect it blocks", {
-
-        runner.addCaseBlock("my case", {
-
-        });
-
-        expect(runner.cases.size()).toBe(1);
-
-    });
-
     Describe("Running an It block", {
 
         It("should collect assertions when its It blocks are run", {
@@ -42,16 +32,21 @@ Describe("A Spec Runner", {
                 }
             }
 
-            runner.addCaseBlock("my case", {
-                runner.addAssertion(true).toBe(true);
+            runner.addSpecBlock("my spec", {
+                runner.addCaseBlock("my case", {
+                    runner.addAssertion(true).toBe(true);
+                });
             });
 
-            expect(runner.cases.size()).toBe(1);
-            CaseInfo caseInfo = runner.cases.get(0)
+            def spec = runner.specs.get(0);
 
-            expect(caseInfo.assertions.size()).toBe(0);
 
-            runner.runCase(caseInfo);
+
+            runner.runSpec(spec);
+
+            expect(spec.cases.size()).toBe(1);
+
+            CaseInfo caseInfo = spec.cases.get(0)
 
             expect(caseInfo.assertions.size()).toBe(1);
 
@@ -70,17 +65,18 @@ Describe("A Spec Runner", {
                 }
             }
 
-            runner.addCaseBlock("my case", {
-                runner.addAssertion(true).toBe(true);
-                runner.addAssertion(true).toBe(false);
+            runner.addSpecBlock("my block", {
+                runner.addCaseBlock("my case", {
+                    runner.addAssertion(true).toBe(true);
+                    runner.addAssertion(true).toBe(false);
+                });
             });
 
-            expect(runner.cases.size()).toBe(1);
-            CaseInfo caseInfo = runner.cases.get(0)
+            SpecInfo specInfo = runner.specs.get(0);
 
-            expect(caseInfo.assertions.size()).toBe(0);
+            runner.runSpec(specInfo);
 
-            runner.runCase(caseInfo);
+            CaseInfo caseInfo = specInfo.cases.get(0)
 
             expect(caseInfo.assertions.size()).toBe(2);
             expect(prints.size()).toBe(2);
@@ -101,17 +97,21 @@ Describe("A Spec Runner", {
                 }
             }
 
-            runner.addCaseBlock("my case", {
-                runner.addAssertion(true).toBe(true);
-                runner.addAssertion(true).toBe(false);
+            runner.addSpecBlock("my spec", {
+
+                runner.addCaseBlock("my case", {
+                    runner.addAssertion(true).toBe(true);
+                    runner.addAssertion(true).toBe(false);
+                });
+
             });
 
-            expect(runner.cases.size()).toBe(1);
-            CaseInfo caseInfo = runner.cases.get(0)
+            SpecInfo specInfo = runner.specs.get(0);
 
-            expect(caseInfo.assertions.size()).toBe(0);
+            runner.runSpec(specInfo);
 
-            runner.runCase(caseInfo);
+            CaseInfo caseInfo = specInfo.cases.get(0)
+
 
             expect(caseInfo.assertions.size()).toBe(2);
 //            expect(prints.size()).toBe(2);

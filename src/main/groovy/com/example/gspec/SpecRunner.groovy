@@ -5,10 +5,9 @@ package com.example.gspec
  */
 class SpecRunner {
 
+    IPrinter printer;
     CaseInfo currentCase;
     SpecInfo currentSpec;
-    IPrinter printer;
-    List<CaseInfo> cases = []
     List<SpecInfo> specs = []
 
 
@@ -19,11 +18,9 @@ class SpecRunner {
     }
 
     def addCaseBlock(String name, Closure body){
-        if(currentSpec) {
-            currentSpec.cases.add(new CaseInfo(name, body))
-        } else {
-            cases.add(new CaseInfo(name, body));
-        }
+
+        currentSpec.cases.add(new CaseInfo(name, body))
+
     }
 
     def addSpecBlock(String name, Closure body){
