@@ -18,9 +18,11 @@ class SpecRunner {
     }
 
     def addCaseBlock(String name, Closure body){
-
         currentSpec.cases.add(new CaseInfo(name, body))
+    }
 
+    def addBeforeBlock(Closure body){
+        currentSpec.befores.add(body);
     }
 
     def addSpecBlock(String name, Closure body){
@@ -43,9 +45,17 @@ class SpecRunner {
         }
     }
 
+    def runBefore(SpecInfo specInfo){
+        for(Closure before: specInfo.befores){
+            before();
+        }
+    }
+
     def runSpec(SpecInfo specInfo){
         currentSpec = specInfo;
         specInfo.body();
+
+        runBefore(specInfo);
 
         for(CaseInfo caseInfo: specInfo.cases){
             runCase(caseInfo);

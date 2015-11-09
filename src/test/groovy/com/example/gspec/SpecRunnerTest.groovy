@@ -79,46 +79,12 @@ Describe("A Spec Runner", {
             CaseInfo caseInfo = specInfo.cases.get(0)
 
             expect(caseInfo.assertions.size()).toBe(2);
+            expect(caseInfo.assertions[0].ok).toBe(true);
+            expect(caseInfo.assertions[1].ok).toBe(false);
             expect(prints.size()).toBe(2);
             expect(prints[0]).toEqual("my case");
 
         });
-
-        It("should validate assertions once they are collected", {
-
-            runner = new SpecRunner();
-
-            def prints = [];
-
-            runner.printer = new IPrinter() {
-                @Override
-                void printLine(String line) {
-                    prints.add(line);
-                }
-            }
-
-            runner.addSpecBlock("my spec", {
-
-                runner.addCaseBlock("my case", {
-                    runner.addAssertion(true).toBe(true);
-                    runner.addAssertion(true).toBe(false);
-                });
-
-            });
-
-            SpecInfo specInfo = runner.specs.get(0);
-
-            runner.runSpec(specInfo);
-
-            CaseInfo caseInfo = specInfo.cases.get(0)
-
-
-            expect(caseInfo.assertions.size()).toBe(2);
-//            expect(prints.size()).toBe(2);
-            expect(prints[0]).toEqual("my case");
-
-        });
-
 
     });
 
@@ -198,6 +164,60 @@ Describe("A Spec Runner", {
             expect(firstSpec.specs.size()).toBe(2);
 
         });
+
+        It("Should run all the beforeEaches", {
+
+            runner = new SpecRunner();
+
+            def prints = [];
+
+            runner.printer = new IPrinter() {
+                @Override
+                void printLine(String line) {
+                    prints.add(line);
+                }
+            }
+
+            def runs = []
+
+            runner.addSpecBlock("describe a thing", {
+
+                runner.addBeforeBlock({
+                    runs.add("before");
+                });
+
+                runner.addSpecBlock("spec 1", {
+                    runs.add("one")
+
+                    runner.addBeforeBlock {
+                        runs.add "inner before"
+                    }
+
+                    runner.addCaseBlock("case", {
+                        runs.add("case")
+                    })
+
+                });
+
+                runner.addSpecBlock("spec 2", {
+                    runs.add("two");
+                });
+
+            });
+
+            def firstSpec = runner.specs.get(0)
+            runner.runSpec(firstSpec);
+
+            expect(runs[0]).toEqual("before");
+            expect(runs[1]).toEqual("one");
+            expect(runs[2]).toEqual("two");
+
+
+            expect(runner.currentSpec).toBe(null);
+            expect(firstSpec.specs.size()).toBe(2);
+
+        });
+
     });
 });
 

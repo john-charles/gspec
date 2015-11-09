@@ -9,6 +9,7 @@ class SpecInfo {
     Closure body;
     List<CaseInfo> cases;
     List<SpecInfo> specs;
+    List<Closure> befores;
 
 
     SpecInfo(String name, Closure body){
@@ -16,6 +17,7 @@ class SpecInfo {
         this.body = body;
         this.cases = new LinkedList<>()
         this.specs = new LinkedList<>()
+        this.befores = new LinkedList<>()
     }
 
 }
